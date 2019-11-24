@@ -6,7 +6,7 @@
  */
 
 $MYPLRURL = '';
-
+require __DIR__ . '/function.highlight.php';
 ?>
 <!doctype html>
 <html lang="en">
@@ -569,6 +569,23 @@ mercury, freddie</textarea>
     </div>
     <div class="row well well-sm">
         <div class="col-md-12">
+            <strong>Functions reference</strong>
+            <br />
+<?php
+$func_help = "<?php\n";
+$func_help .= 'preg_match( string $pattern , string $subject [, array &$matches [, int $flags = 0 [, int $offset = 0 ]]] ) : int; '."\n";
+$func_help .= 'preg_match_all ( string $pattern , string $subject [, array &$matches [, int $flags = PREG_PATTERN_ORDER [, int $offset = 0 ]]] ) : int; '."\n";
+$func_help .= 'preg_replace ( mixed $pattern , mixed $replacement , mixed $subject [, int $limit = -1 [, int &$count ]] ) : mixed; '."\n";
+$func_help .= 'preg_grep ( string $pattern , array $input [, int $flags = 0 ] ) : array; '."\n";
+$func_help .= 'preg_split ( string $pattern , string $subject [, int $limit = -1 [, int $flags = 0 ]] ) : array; '."\n";
+$func_help .= "?>\n";
+
+print highlight($func_help);
+?>
+        </div>
+    </div>
+    <div class="row well well-sm">
+        <div class="col-md-12">
             <strong>Cheat Sheet</strong>
             <br />
             <table style="width:100%">
@@ -775,6 +792,7 @@ function evalRegex() {
                 document.getElementById("preg-match").innerHTML = data.preg_match;
                 document.getElementById("preg-match-all").innerHTML = data.preg_match_all;
                 document.getElementById("preg-replace").innerHTML = data.preg_replace;
+                if ( $("#preg-replace").hasClass("active") && ( data.regex_2.length > 0 ) ) { $("#regex_2").val(data.regex_2); }
                 document.getElementById("preg-grep").innerHTML = data.preg_grep;
                 document.getElementById("preg-split").innerHTML = data.preg_split;
 
@@ -834,6 +852,10 @@ function evalRegex() {
 evalRegex();
 
 $('#regex_1 , #regex_2 , #examples , #replacement').keyup($.debounce(250, evalRegex));
+
+$("ul.nav.nav-pills > li:nth-child(3)").click(function () {
+    evalRegex();
+});
 
 
 $('#clear').click(function () {

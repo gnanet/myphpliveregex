@@ -25,12 +25,16 @@ class MyPhpLiveRegex
             {
             $ret[$name] = '';
             } else {
-            $ret[$name] = '<input class="form-control" onClick="this.focus();this.select();" type="text" value="'.$data['cmd'].'" readonly="">';
+            $ret[$name] = '<input id="cmd_'.$name.'" class="form-control" type="text" onClick="this.focus();this.select();" value="'.$data['cmd'].'" readonly="">';
                 switch($name)
                 {
                     case 'preg_match':
                             $ret[$name] .= '<div class="data-structure">'. $data['data']  .'</div>';
                             $ret[$name] .= '<p><strong>note:</strong> preg_match is run on each line of input.</p>';
+                            break;
+                    case 'preg_replace':
+                            $ret[$name] .= '<div class="data-structure">'. @r( $data['data'] ) .'</div>';
+                            $ret['regex_2'] = $data['opts'];
                             break;
                     case 'preg_split':
                             $ret[$name] .= '<div class="data-structure">'. $data['data'] .'</div>';
@@ -53,11 +57,12 @@ class MyPhpLiveRegex
     public function pregView($regex, $options, $replace, $data)
     {
 
-        $preg['preg_match']['cmd']     = "preg_match('/".htmlentities($regex)."/'".$options.", \$input_line, \$output_array);";
-        $preg['preg_match_all']['cmd'] = "preg_match_all('/".htmlentities($regex)."/'".$options.", \$input_lines, \$output_array);";
-        $preg['preg_replace']['cmd']   = "preg_replace('/".htmlentities($regex)."/'".$options.", '".$replace."', \$input_lines);";
-        $preg['preg_grep']['cmd']      = "preg_grep('/".htmlentities($regex)."/'".$options.", explode(&quot;".'\n'."&quot;, \$input_lines));";
-        $preg['preg_split']['cmd']     = "preg_split('/".htmlentities($regex)."/'".$options.", \$input_line);";
+        $preg['preg_match']['cmd']     = "preg_match(&quot;/".htmlentities($regex)."/".$options."&quot;, \$input_line, \$output_array);";
+        $preg['preg_match_all']['cmd'] = "preg_match_all(&quot;/".htmlentities($regex)."/".$options."&quot;, \$input_lines, \$output_array);";
+        $preg['preg_replace']['cmd']   = "preg_replace(&quot;/".htmlentities($regex)."/".( strpos($options,'m') === false  ? $options.'m' : $options )."&quot;, '".htmlentities($replace)."', \$input_lines);";
+        $preg['preg_replace']['opts']  = ( strpos($options,'m') === false ) ? $options.'m' : $options;
+        $preg['preg_grep']['cmd']      = "preg_grep(&quot;/".htmlentities($regex)."/'".$options."&quot;, explode(&quot;".'\n'."&quot;, \$input_lines));";
+        $preg['preg_split']['cmd']     = "preg_split(&quot;/".htmlentities($regex)."/'".$options."&quot;, \$input_line);";
 
         $lines = explode("\n", $data);
 
@@ -91,10 +96,10 @@ class MyPhpLiveRegex
         $output_array = preg_grep("/".$regex."/".$options, explode("\n", $data));
         $preg['preg_grep']['data'] = array_map("htmlentities", $output_array);
 
-        $out = preg_replace('/'.$regex.'/'.$options, $replace, $data);
+        $out = preg_replace('/'.$regex.'/'.( strpos($options,'m') === false ? $options.'m' : $options ), $replace, $data);
 
-        // $preg['preg_replace']['data'] = htmlentities($out);
-        $preg['preg_replace']['data'] = $out;
+        $preg['preg_replace']['data'] = htmlentities($out);
+        //$preg['preg_replace']['data'] = $out;
 
         return $preg;
     }
